@@ -46,8 +46,7 @@ type RONullString struct {
 }
 
 func (n *RONullString) UnmarshalJSON(buf []byte) error {
-	n.Present = true
-	return nil
+	return ErrReadOnlyValue
 }
 
 func (n *RONullString) MarshalJSON() ([]byte, error) {
@@ -63,8 +62,7 @@ type ROString struct {
 }
 
 func (n *ROString) UnmarshalJSON(buf []byte) error {
-	n.Present = true
-	return nil
+	return ErrReadOnlyValue
 }
 
 func (n *ROString) MarshalJSON() ([]byte, error) {

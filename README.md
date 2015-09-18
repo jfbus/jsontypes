@@ -9,7 +9,7 @@ jsontypes provides :
 
 * standard, non nullable types : null maps to the zero value (0, "", ...)
 * nullable types (null is different from zero)
-* read-only types (unmarshal does not update the value, marshal marshals the struct value)
+* read-only types (unmarshal throws an error, marshal marshals the struct value)
 
 Examples :
 
@@ -19,10 +19,10 @@ type Foo struct {
 	Baz jsontypes.ROString
 }
 foo := &Foo{}
-json.Unmarshal([]byte(`{"Baz": "baz"}`), foo)
+// returns an error
+err := json.Unmarshal([]byte(`{"Baz": "baz"}`), foo)
 // foo.Bar.Present is set to false
-// foo.Baz.Present is set to true
-// foo.Baz.Value is ""
+err := json.Unmarshal([]byte(`{}`), foo)
 ```
 
 TODO :
