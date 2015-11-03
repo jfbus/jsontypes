@@ -11,36 +11,46 @@ type NullInt64 struct {
 	Present bool
 }
 
-func (n *NullInt64) UnmarshalJSON(buf []byte) error {
-	n.Present = true
+func (i *NullInt64) Set(val int64) {
+	i.Present = true
+	i.Val = val
+}
+
+func (i *NullInt64) UnmarshalJSON(buf []byte) error {
+	i.Present = true
 	if buf[0] == 'n' {
-		n.Null = true
+		i.Null = true
 		return nil
 	} else {
-		return json.Unmarshal(buf, &n.Val)
+		return json.Unmarshal(buf, &i.Val)
 	}
 }
 
-func (n *NullInt64) MarshalJSON() ([]byte, error) {
-	if !n.Present || n.Null {
+func (i *NullInt64) MarshalJSON() ([]byte, error) {
+	if !i.Present || i.Null {
 		return []byte("null"), nil
 	}
-	return json.Marshal(n.Val)
+	return json.Marshal(i.Val)
 }
 
-func (n *NullInt64) Scan(value interface{}) error {
-	return nil
+func (i *NullInt64) Scan(value interface{}) error {
+	if value == nil {
+		i.Val, i.Null = 0, true
+		return nil
+	}
+	i.Null = false
+	return convertAssign(&i.Val, value)
 }
 
-func (n NullInt64) Value() (driver.Value, error) {
-	if n.Null {
+func (i NullInt64) Value() (driver.Value, error) {
+	if i.Null {
 		return nil, nil
 	}
-	return n.Val, nil
+	return i.Val, nil
 }
 
-func (n NullInt64) WillUpdate() bool {
-	return n.Present
+func (i NullInt64) WillUpdate() bool {
+	return i.Present
 }
 
 type Int64 struct {
@@ -48,25 +58,34 @@ type Int64 struct {
 	Present bool
 }
 
-func (n *Int64) UnmarshalJSON(buf []byte) error {
-	n.Present = true
-	return json.Unmarshal(buf, &n.Val)
+func (i *Int64) Set(val int64) {
+	i.Present = true
+	i.Val = val
 }
 
-func (n *Int64) MarshalJSON() ([]byte, error) {
-	return json.Marshal(n.Val)
+func (i *Int64) UnmarshalJSON(buf []byte) error {
+	i.Present = true
+	return json.Unmarshal(buf, &i.Val)
 }
 
-func (n *Int64) Scan(value interface{}) error {
-	return nil
+func (i *Int64) MarshalJSON() ([]byte, error) {
+	return json.Marshal(i.Val)
 }
 
-func (n Int64) Value() (driver.Value, error) {
-	return n.Val, nil
+func (i *Int64) Scan(value interface{}) error {
+	if value == nil {
+		i.Val = 0
+		return nil
+	}
+	return convertAssign(&i.Val, value)
 }
 
-func (n Int64) WillUpdate() bool {
-	return n.Present
+func (i Int64) Value() (driver.Value, error) {
+	return i.Val, nil
+}
+
+func (i Int64) WillUpdate() bool {
+	return i.Present
 }
 
 type RONullInt64 struct {
@@ -75,30 +94,40 @@ type RONullInt64 struct {
 	Present bool
 }
 
-func (n *RONullInt64) UnmarshalJSON(buf []byte) error {
+func (i *RONullInt64) Set(val int64) {
+	i.Present = true
+	i.Val = val
+}
+
+func (i *RONullInt64) UnmarshalJSON(buf []byte) error {
 	return ErrReadOnlyValue
 }
 
-func (n *RONullInt64) MarshalJSON() ([]byte, error) {
-	if !n.Present || n.Null {
+func (i *RONullInt64) MarshalJSON() ([]byte, error) {
+	if !i.Present || i.Null {
 		return []byte("null"), nil
 	}
-	return json.Marshal(n.Val)
+	return json.Marshal(i.Val)
 }
 
-func (n *RONullInt64) Scan(value interface{}) error {
-	return nil
+func (i *RONullInt64) Scan(value interface{}) error {
+	if value == nil {
+		i.Val, i.Null = 0, true
+		return nil
+	}
+	i.Null = false
+	return convertAssign(&i.Val, value)
 }
 
-func (n RONullInt64) Value() (driver.Value, error) {
-	if n.Null {
+func (i RONullInt64) Value() (driver.Value, error) {
+	if i.Null {
 		return nil, nil
 	}
-	return n.Val, nil
+	return i.Val, nil
 }
 
-func (n RONullInt64) WillUpdate() bool {
-	return false
+func (i RONullInt64) WillUpdate() bool {
+	return i.Present
 }
 
 type ROInt64 struct {
@@ -106,22 +135,31 @@ type ROInt64 struct {
 	Present bool
 }
 
-func (n *ROInt64) UnmarshalJSON(buf []byte) error {
+func (i *ROInt64) Set(val int64) {
+	i.Present = true
+	i.Val = val
+}
+
+func (i *ROInt64) UnmarshalJSON(buf []byte) error {
 	return ErrReadOnlyValue
 }
 
-func (n *ROInt64) MarshalJSON() ([]byte, error) {
-	return json.Marshal(n.Val)
+func (i *ROInt64) MarshalJSON() ([]byte, error) {
+	return json.Marshal(i.Val)
 }
 
-func (n *ROInt64) Scan(value interface{}) error {
-	return nil
+func (i *ROInt64) Scan(value interface{}) error {
+	if value == nil {
+		i.Val = 0
+		return nil
+	}
+	return convertAssign(&i.Val, value)
 }
 
-func (n ROInt64) Value() (driver.Value, error) {
-	return n.Val, nil
+func (i ROInt64) Value() (driver.Value, error) {
+	return i.Val, nil
 }
 
-func (n ROInt64) WillUpdate() bool {
-	return false
+func (i ROInt64) WillUpdate() bool {
+	return i.Present
 }

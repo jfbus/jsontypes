@@ -11,36 +11,46 @@ type NullString struct {
 	Present bool
 }
 
-func (n *NullString) UnmarshalJSON(buf []byte) error {
-	n.Present = true
+func (s *NullString) Set(value string) {
+	s.Val = value
+	s.Present = true
+}
+
+func (s *NullString) UnmarshalJSON(buf []byte) error {
+	s.Present = true
 	if buf[0] == 'n' {
-		n.Null = true
+		s.Null = true
 		return nil
 	} else {
-		return json.Unmarshal(buf, &n.Val)
+		return json.Unmarshal(buf, &s.Val)
 	}
 }
 
-func (n *NullString) MarshalJSON() ([]byte, error) {
-	if !n.Present || n.Null {
+func (s *NullString) MarshalJSON() ([]byte, error) {
+	if !s.Present || s.Null {
 		return []byte("null"), nil
 	}
-	return json.Marshal(n.Val)
+	return json.Marshal(s.Val)
 }
 
-func (n *NullString) Scan(value interface{}) error {
-	return nil
+func (s *NullString) Scan(value interface{}) error {
+	if value == nil {
+		s.Val, s.Null = "", true
+		return nil
+	}
+	s.Null = false
+	return convertAssign(&s.Val, value)
 }
 
-func (n NullString) Value() (driver.Value, error) {
-	if n.Null {
+func (s NullString) Value() (driver.Value, error) {
+	if s.Null {
 		return nil, nil
 	}
-	return n.Val, nil
+	return s.Val, nil
 }
 
-func (n NullString) WillUpdate() bool {
-	return n.Present
+func (s NullString) WillUpdate() bool {
+	return s.Present
 }
 
 type String struct {
@@ -48,28 +58,37 @@ type String struct {
 	Present bool
 }
 
-func (n *String) UnmarshalJSON(buf []byte) error {
-	n.Present = true
-	return json.Unmarshal(buf, &n.Val)
+func (s *String) Set(value string) {
+	s.Val = value
+	s.Present = true
 }
 
-func (n *String) MarshalJSON() ([]byte, error) {
-	return json.Marshal(n.Val)
+func (s *String) UnmarshalJSON(buf []byte) error {
+	s.Present = true
+	return json.Unmarshal(buf, &s.Val)
 }
 
-func (n *String) Scan(value interface{}) error {
-	return nil
+func (s *String) MarshalJSON() ([]byte, error) {
+	return json.Marshal(s.Val)
 }
 
-func (n String) Value() (driver.Value, error) {
-	if !n.Present {
+func (s *String) Scan(value interface{}) error {
+	if value == nil {
+		s.Val = ""
+		return nil
+	}
+	return convertAssign(&s.Val, value)
+}
+
+func (s String) Value() (driver.Value, error) {
+	if !s.Present {
 		return nil, nil
 	}
-	return n.Val, nil
+	return s.Val, nil
 }
 
-func (n String) WillUpdate() bool {
-	return n.Present
+func (s String) WillUpdate() bool {
+	return s.Present
 }
 
 type RONullString struct {
@@ -78,30 +97,40 @@ type RONullString struct {
 	Present bool
 }
 
-func (n *RONullString) UnmarshalJSON(buf []byte) error {
+func (s *RONullString) Set(value string) {
+	s.Val = value
+	s.Present = true
+}
+
+func (s *RONullString) UnmarshalJSON(buf []byte) error {
 	return ErrReadOnlyValue
 }
 
-func (n *RONullString) MarshalJSON() ([]byte, error) {
-	if !n.Present || n.Null {
+func (s *RONullString) MarshalJSON() ([]byte, error) {
+	if s.Null {
 		return []byte("null"), nil
 	}
-	return json.Marshal(n.Val)
+	return json.Marshal(s.Val)
 }
 
-func (n *RONullString) Scan(value interface{}) error {
-	return nil
+func (s *RONullString) Scan(value interface{}) error {
+	if value == nil {
+		s.Val, s.Null = "", true
+		return nil
+	}
+	s.Null = false
+	return convertAssign(&s.Val, value)
 }
 
-func (n RONullString) Value() (driver.Value, error) {
-	if !n.Present {
+func (s RONullString) Value() (driver.Value, error) {
+	if s.Null {
 		return nil, nil
 	}
-	return n.Val, nil
+	return s.Val, nil
 }
 
-func (n RONullString) WillUpdate() bool {
-	return false
+func (s RONullString) WillUpdate() bool {
+	return s.Present
 }
 
 type ROString struct {
@@ -109,24 +138,30 @@ type ROString struct {
 	Present bool
 }
 
-func (n *ROString) UnmarshalJSON(buf []byte) error {
+func (s *ROString) Set(value string) {
+	s.Val = value
+	s.Present = true
+}
+
+func (s *ROString) UnmarshalJSON(buf []byte) error {
 	return ErrReadOnlyValue
 }
 
-func (n *ROString) MarshalJSON() ([]byte, error) {
-	return json.Marshal(n.Val)
+func (s *ROString) MarshalJSON() ([]byte, error) {
+	return json.Marshal(s.Val)
 }
-func (n *ROString) Scan(value interface{}) error {
-	return nil
-}
-
-func (n ROString) Value() (driver.Value, error) {
-	if !n.Present {
-		return nil, nil
+func (s *ROString) Scan(value interface{}) error {
+	if value == nil {
+		s.Val = ""
+		return nil
 	}
-	return n.Val, nil
+	return convertAssign(&s.Val, value)
 }
 
-func (n ROString) WillUpdate() bool {
-	return false
+func (s ROString) Value() (driver.Value, error) {
+	return s.Val, nil
+}
+
+func (s ROString) WillUpdate() bool {
+	return s.Present
 }

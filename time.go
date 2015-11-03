@@ -3,6 +3,7 @@ package jsontypes
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"log"
 	"time"
 )
 
@@ -12,36 +13,42 @@ type NullTime struct {
 	Present bool
 }
 
-func (n *NullTime) UnmarshalJSON(buf []byte) error {
-	n.Present = true
+func (t *NullTime) Set(val time.Time) {
+	t.Present = true
+	t.Val = val
+}
+
+func (t *NullTime) UnmarshalJSON(buf []byte) error {
+	t.Present = true
 	if buf[0] == 'n' {
-		n.Null = true
+		t.Null = true
 		return nil
 	} else {
-		return json.Unmarshal(buf, &n.Val)
+		return json.Unmarshal(buf, &t.Val)
 	}
 }
 
-func (n *NullTime) MarshalJSON() ([]byte, error) {
-	if !n.Present || n.Null || n.Val.IsZero() {
+func (t *NullTime) MarshalJSON() ([]byte, error) {
+	if !t.Present || t.Null || t.Val.IsZero() {
 		return []byte("null"), nil
 	}
-	return json.Marshal(n.Val)
+	return json.Marshal(t.Val)
 }
 
-func (n *NullTime) Scan(value interface{}) error {
+func (t *NullTime) Scan(value interface{}) error {
+	log.Println("NullTime.Scat is not implemented")
 	return nil
 }
 
-func (n NullTime) Value() (driver.Value, error) {
-	if n.Null || n.Val.IsZero() {
+func (t NullTime) Value() (driver.Value, error) {
+	if t.Null || t.Val.IsZero() {
 		return nil, nil
 	}
-	return n.Val, nil
+	return t.Val, nil
 }
 
-func (n NullTime) WillUpdate() bool {
-	return n.Present
+func (t NullTime) WillUpdate() bool {
+	return t.Present
 }
 
 type Time struct {
@@ -49,28 +56,34 @@ type Time struct {
 	Present bool
 }
 
-func (n *Time) UnmarshalJSON(buf []byte) error {
-	n.Present = true
-	return json.Unmarshal(buf, &n.Val)
+func (t *Time) Set(val time.Time) {
+	t.Present = true
+	t.Val = val
 }
 
-func (n *Time) MarshalJSON() ([]byte, error) {
-	if !n.Present || n.Val.IsZero() {
+func (t *Time) UnmarshalJSON(buf []byte) error {
+	t.Present = true
+	return json.Unmarshal(buf, &t.Val)
+}
+
+func (t *Time) MarshalJSON() ([]byte, error) {
+	if !t.Present || t.Val.IsZero() {
 		return []byte("null"), nil
 	}
-	return json.Marshal(n.Val)
+	return json.Marshal(t.Val)
 }
 
-func (n *Time) Scan(value interface{}) error {
+func (t *Time) Scan(value interface{}) error {
+	log.Println("Time.Scat is not implemented")
 	return nil
 }
 
-func (n Time) Value() (driver.Value, error) {
-	return n.Val, nil
+func (t Time) Value() (driver.Value, error) {
+	return t.Val, nil
 }
 
-func (n Time) WillUpdate() bool {
-	return n.Present
+func (t Time) WillUpdate() bool {
+	return t.Present
 }
 
 type RONullTime struct {
@@ -79,30 +92,36 @@ type RONullTime struct {
 	Present bool
 }
 
-func (n *RONullTime) UnmarshalJSON(buf []byte) error {
+func (t *RONullTime) Set(val time.Time) {
+	t.Present = true
+	t.Val = val
+}
+
+func (t *RONullTime) UnmarshalJSON(buf []byte) error {
 	return ErrReadOnlyValue
 }
 
-func (n *RONullTime) MarshalJSON() ([]byte, error) {
-	if !n.Present || n.Null || n.Val.IsZero() {
+func (t *RONullTime) MarshalJSON() ([]byte, error) {
+	if !t.Present || t.Null || t.Val.IsZero() {
 		return []byte("null"), nil
 	}
-	return json.Marshal(n.Val)
+	return json.Marshal(t.Val)
 }
 
-func (n *RONullTime) Scan(value interface{}) error {
+func (t *RONullTime) Scan(value interface{}) error {
+	log.Println("RONullTime.Scat is not implemented")
 	return nil
 }
 
-func (n RONullTime) Value() (driver.Value, error) {
-	if n.Null || n.Val.IsZero() {
+func (t RONullTime) Value() (driver.Value, error) {
+	if t.Null || t.Val.IsZero() {
 		return nil, nil
 	}
-	return n.Val, nil
+	return t.Val, nil
 }
 
-func (n RONullTime) WillUpdate() bool {
-	return false
+func (t RONullTime) WillUpdate() bool {
+	return t.Present
 }
 
 type ROTime struct {
@@ -110,25 +129,31 @@ type ROTime struct {
 	Present bool
 }
 
-func (n *ROTime) UnmarshalJSON(buf []byte) error {
+func (t *ROTime) Set(val time.Time) {
+	t.Present = true
+	t.Val = val
+}
+
+func (t *ROTime) UnmarshalJSON(buf []byte) error {
 	return ErrReadOnlyValue
 }
 
-func (n *ROTime) MarshalJSON() ([]byte, error) {
-	if !n.Present || n.Val.IsZero() {
+func (t *ROTime) MarshalJSON() ([]byte, error) {
+	if !t.Present || t.Val.IsZero() {
 		return []byte("null"), nil
 	}
-	return json.Marshal(n.Val)
+	return json.Marshal(t.Val)
 }
 
-func (n *ROTime) Scan(value interface{}) error {
+func (t *ROTime) Scan(value interface{}) error {
+	log.Println("ROTime.Scat is not implemented")
 	return nil
 }
 
-func (n ROTime) Value() (driver.Value, error) {
-	return n.Val, nil
+func (t ROTime) Value() (driver.Value, error) {
+	return t.Val, nil
 }
 
-func (n ROTime) WillUpdate() bool {
-	return false
+func (t ROTime) WillUpdate() bool {
+	return t.Present
 }

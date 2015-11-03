@@ -37,9 +37,9 @@ func TestUnmarshalString(t *testing.T) {
 		{`{"RONullString": null}`, &embed{}, &embed{RONullString: RONullString{Present: true}}},
 		{`{"RONullString": ""}`, &embed{}, &embed{RONullString: RONullString{Present: true}}},
 		{`{"RONullString": "foo"}`, &embed{}, &embed{RONullString: RONullString{Present: true}}},
-		{`{"ROString": null}`, &embed{}, &embed{ROString: ROString{Present: true}}},
-		{`{"ROString": ""}`, &embed{}, &embed{ROString: ROString{Present: true}}},
-		{`{"ROString": "foo"}`, &embed{}, &embed{ROString: ROString{Present: true}}},
+		{`{"ROString": null}`, &embed{}, &embed{}},
+		{`{"ROString": ""}`, &embed{}, &embed{}},
+		{`{"ROString": "foo"}`, &embed{}, &embed{}},
 	}
 
 	for _, tc := range utc {

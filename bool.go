@@ -11,36 +11,46 @@ type NullBool struct {
 	Present bool
 }
 
-func (n *NullBool) UnmarshalJSON(buf []byte) error {
-	n.Present = true
+func (b *NullBool) Set(val bool) {
+	b.Present = true
+	b.Val = val
+}
+
+func (b *NullBool) UnmarshalJSON(buf []byte) error {
+	b.Present = true
 	if buf[0] == 'n' {
-		n.Null = true
+		b.Null = true
 		return nil
 	} else {
-		return json.Unmarshal(buf, &n.Val)
+		return json.Unmarshal(buf, &b.Val)
 	}
 }
 
-func (n *NullBool) MarshalJSON() ([]byte, error) {
-	if !n.Present || n.Null {
+func (b *NullBool) MarshalJSON() ([]byte, error) {
+	if !b.Present || b.Null {
 		return []byte("null"), nil
 	}
-	return json.Marshal(n.Val)
+	return json.Marshal(b.Val)
 }
 
-func (n *NullBool) Scan(value interface{}) error {
-	return nil
+func (b *NullBool) Scan(value interface{}) error {
+	if value == nil {
+		b.Val, b.Null = false, true
+		return nil
+	}
+	b.Null = false
+	return convertAssign(&b.Val, value)
 }
 
-func (n NullBool) Value() (driver.Value, error) {
-	if n.Null {
+func (b NullBool) Value() (driver.Value, error) {
+	if b.Null {
 		return nil, nil
 	}
-	return n.Val, nil
+	return b.Val, nil
 }
 
-func (n NullBool) WillUpdate() bool {
-	return n.Present
+func (b NullBool) WillUpdate() bool {
+	return b.Present
 }
 
 type Bool struct {
@@ -48,56 +58,75 @@ type Bool struct {
 	Present bool
 }
 
-func (n *Bool) UnmarshalJSON(buf []byte) error {
-	n.Present = true
-	return json.Unmarshal(buf, &n.Val)
+func (b *Bool) Set(val bool) {
+	b.Present = true
+	b.Val = val
 }
 
-func (n *Bool) MarshalJSON() ([]byte, error) {
-	return json.Marshal(n.Val)
+func (b *Bool) UnmarshalJSON(buf []byte) error {
+	b.Present = true
+	return json.Unmarshal(buf, &b.Val)
 }
 
-func (n *Bool) Scan(value interface{}) error {
-	return nil
+func (b *Bool) MarshalJSON() ([]byte, error) {
+	return json.Marshal(b.Val)
 }
 
-func (n Bool) Value() (driver.Value, error) {
-	return n.Val, nil
+func (b *Bool) Scan(value interface{}) error {
+	if value == nil {
+		b.Val = false
+		return nil
+	}
+	return convertAssign(&b.Val, value)
 }
 
-func (n Bool) WillUpdate() bool {
-	return n.Present
+func (b Bool) Value() (driver.Value, error) {
+	return b.Val, nil
+}
+
+func (b Bool) WillUpdate() bool {
+	return b.Present
 }
 
 type RONullBool struct {
-	Val     Bool
+	Val     bool
 	Null    bool
 	Present bool
 }
 
-func (n *RONullBool) UnmarshalJSON(buf []byte) error {
+func (b *RONullBool) Set(val bool) {
+	b.Present = true
+	b.Val = val
+}
+
+func (b *RONullBool) UnmarshalJSON(buf []byte) error {
 	return ErrReadOnlyValue
 }
 
-func (n *RONullBool) MarshalJSON() ([]byte, error) {
-	if !n.Present || n.Null {
+func (b *RONullBool) MarshalJSON() ([]byte, error) {
+	if !b.Present || b.Null {
 		return []byte("null"), nil
 	}
-	return json.Marshal(n.Val)
+	return json.Marshal(b.Val)
 }
 
-func (n *RONullBool) Scan(value interface{}) error {
-	return nil
+func (b *RONullBool) Scan(value interface{}) error {
+	if value == nil {
+		b.Val, b.Null = false, true
+		return nil
+	}
+	b.Null = false
+	return convertAssign(&b.Val, value)
 }
 
-func (n RONullBool) Value() (driver.Value, error) {
-	if n.Null {
+func (b RONullBool) Value() (driver.Value, error) {
+	if b.Null {
 		return nil, nil
 	}
-	return n.Val, nil
+	return b.Val, nil
 }
 
-func (n RONullBool) WillUpdate() bool {
+func (b RONullBool) WillUpdate() bool {
 	return false
 }
 
@@ -106,22 +135,31 @@ type ROBool struct {
 	Present bool
 }
 
-func (n *ROBool) UnmarshalJSON(buf []byte) error {
+func (b *ROBool) Set(val bool) {
+	b.Present = true
+	b.Val = val
+}
+
+func (b *ROBool) UnmarshalJSON(buf []byte) error {
 	return ErrReadOnlyValue
 }
 
-func (n *ROBool) MarshalJSON() ([]byte, error) {
-	return json.Marshal(n.Val)
+func (b *ROBool) MarshalJSON() ([]byte, error) {
+	return json.Marshal(b.Val)
 }
 
-func (n *ROBool) Scan(value interface{}) error {
-	return nil
+func (b *ROBool) Scan(value interface{}) error {
+	if value == nil {
+		b.Val = false
+		return nil
+	}
+	return convertAssign(&b.Val, value)
 }
 
-func (n ROBool) Value() (driver.Value, error) {
-	return n.Val, nil
+func (b ROBool) Value() (driver.Value, error) {
+	return b.Val, nil
 }
 
-func (n ROBool) WillUpdate() bool {
-	return false
+func (b ROBool) WillUpdate() bool {
+	return b.Present
 }
