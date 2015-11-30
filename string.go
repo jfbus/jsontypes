@@ -49,8 +49,8 @@ func (s NullString) Value() (driver.Value, error) {
 	return s.Val, nil
 }
 
-func (s NullString) WillUpdate() bool {
-	return s.Present
+func (s NullString) Missing() bool {
+	return !s.Present
 }
 
 type String struct {
@@ -87,8 +87,8 @@ func (s String) Value() (driver.Value, error) {
 	return s.Val, nil
 }
 
-func (s String) WillUpdate() bool {
-	return s.Present
+func (s String) Missing() bool {
+	return !s.Present
 }
 
 type RONullString struct {
@@ -129,8 +129,8 @@ func (s RONullString) Value() (driver.Value, error) {
 	return s.Val, nil
 }
 
-func (s RONullString) WillUpdate() bool {
-	return s.Present
+func (s RONullString) Missing() bool {
+	return !s.Present
 }
 
 type ROString struct {
@@ -162,6 +162,6 @@ func (s ROString) Value() (driver.Value, error) {
 	return s.Val, nil
 }
 
-func (s ROString) WillUpdate() bool {
-	return s.Present
+func (s ROString) Missing() bool {
+	return !s.Present
 }

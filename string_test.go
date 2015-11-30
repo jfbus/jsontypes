@@ -9,10 +9,8 @@ import (
 func TestUnmarshalString(t *testing.T) {
 
 	type embed struct {
-		NullString   NullString
-		String       String
-		RONullString RONullString
-		ROString     ROString
+		NullString NullString
+		String     String
 	}
 
 	type testcase struct {
@@ -25,21 +23,15 @@ func TestUnmarshalString(t *testing.T) {
 
 		{`null`, &NullString{}, &NullString{Present: true, Null: true}},
 		{`""`, &NullString{}, &NullString{Present: true}},
-		{`"foo"`, &NullString{}, &NullString{Present: true, Value: "foo"}},
+		{`"foo"`, &NullString{}, &NullString{Present: true, Val: "foo"}},
 
 		{`{}`, &embed{}, &embed{}},
 		{`{"NullString": null}`, &embed{}, &embed{NullString: NullString{Present: true, Null: true}}},
 		{`{"NullString": ""}`, &embed{}, &embed{NullString: NullString{Present: true}}},
-		{`{"NullString": "foo"}`, &embed{}, &embed{NullString: NullString{Present: true, Value: "foo"}}},
+		{`{"NullString": "foo"}`, &embed{}, &embed{NullString: NullString{Present: true, Val: "foo"}}},
 		{`{"String": null}`, &embed{}, &embed{String: String{Present: true}}},
 		{`{"String": ""}`, &embed{}, &embed{String: String{Present: true}}},
-		{`{"String": "foo"}`, &embed{}, &embed{String: String{Present: true, Value: "foo"}}},
-		{`{"RONullString": null}`, &embed{}, &embed{RONullString: RONullString{Present: true}}},
-		{`{"RONullString": ""}`, &embed{}, &embed{RONullString: RONullString{Present: true}}},
-		{`{"RONullString": "foo"}`, &embed{}, &embed{RONullString: RONullString{Present: true}}},
-		{`{"ROString": null}`, &embed{}, &embed{}},
-		{`{"ROString": ""}`, &embed{}, &embed{}},
-		{`{"ROString": "foo"}`, &embed{}, &embed{}},
+		{`{"String": "foo"}`, &embed{}, &embed{String: String{Present: true, Val: "foo"}}},
 	}
 
 	for _, tc := range utc {
@@ -49,6 +41,31 @@ func TestUnmarshalString(t *testing.T) {
 		}
 		if !reflect.DeepEqual(tc.obj, tc.expected) {
 			t.Errorf("%s expected to unmarshal to %#v but got %#v", tc.json, tc.expected, tc.obj)
+		}
+	}
+}
+
+func TestUnmarshalROString(t *testing.T) {
+
+	type embed struct {
+		NullString RONullString
+		String     ROString
+	}
+
+	utc := []string{
+		`{"NullString": null}`,
+		`{"NullString": ""}`,
+		`{"NullString": "foo"}`,
+		`{"String": null}`,
+		`{"String": ""}`,
+		`{"String": "foo"}`,
+	}
+
+	for _, tc := range utc {
+		obj := embed{}
+		err := json.Unmarshal([]byte(tc), &obj)
+		if err == nil {
+			t.Errorf("Unmarshaling of RO field in %s expected to generate a Read-Only error, nil found", tc)
 		}
 	}
 }

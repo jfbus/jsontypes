@@ -49,8 +49,8 @@ func (b NullBool) Value() (driver.Value, error) {
 	return b.Val, nil
 }
 
-func (b NullBool) WillUpdate() bool {
-	return b.Present
+func (b NullBool) Missing() bool {
+	return !b.Present
 }
 
 type Bool struct {
@@ -84,8 +84,8 @@ func (b Bool) Value() (driver.Value, error) {
 	return b.Val, nil
 }
 
-func (b Bool) WillUpdate() bool {
-	return b.Present
+func (b Bool) Missing() bool {
+	return !b.Present
 }
 
 type RONullBool struct {
@@ -126,8 +126,8 @@ func (b RONullBool) Value() (driver.Value, error) {
 	return b.Val, nil
 }
 
-func (b RONullBool) WillUpdate() bool {
-	return false
+func (b RONullBool) Missing() bool {
+	return !b.Present
 }
 
 type ROBool struct {
@@ -160,6 +160,6 @@ func (b ROBool) Value() (driver.Value, error) {
 	return b.Val, nil
 }
 
-func (b ROBool) WillUpdate() bool {
-	return b.Present
+func (b ROBool) Missing() bool {
+	return !b.Present
 }

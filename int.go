@@ -49,8 +49,8 @@ func (i NullInt64) Value() (driver.Value, error) {
 	return i.Val, nil
 }
 
-func (i NullInt64) WillUpdate() bool {
-	return i.Present
+func (i NullInt64) Missing() bool {
+	return !i.Present
 }
 
 type Int64 struct {
@@ -84,8 +84,8 @@ func (i Int64) Value() (driver.Value, error) {
 	return i.Val, nil
 }
 
-func (i Int64) WillUpdate() bool {
-	return i.Present
+func (i Int64) Missing() bool {
+	return !i.Present
 }
 
 type RONullInt64 struct {
@@ -126,8 +126,8 @@ func (i RONullInt64) Value() (driver.Value, error) {
 	return i.Val, nil
 }
 
-func (i RONullInt64) WillUpdate() bool {
-	return i.Present
+func (i RONullInt64) Missing() bool {
+	return !i.Present
 }
 
 type ROInt64 struct {
@@ -160,6 +160,6 @@ func (i ROInt64) Value() (driver.Value, error) {
 	return i.Val, nil
 }
 
-func (i ROInt64) WillUpdate() bool {
-	return i.Present
+func (i ROInt64) Missing() bool {
+	return !i.Present
 }

@@ -47,8 +47,8 @@ func (t NullTime) Value() (driver.Value, error) {
 	return t.Val, nil
 }
 
-func (t NullTime) WillUpdate() bool {
-	return t.Present
+func (t NullTime) Missing() bool {
+	return !t.Present
 }
 
 type Time struct {
@@ -82,8 +82,8 @@ func (t Time) Value() (driver.Value, error) {
 	return t.Val, nil
 }
 
-func (t Time) WillUpdate() bool {
-	return t.Present
+func (t Time) Missing() bool {
+	return !t.Present
 }
 
 type RONullTime struct {
@@ -120,8 +120,8 @@ func (t RONullTime) Value() (driver.Value, error) {
 	return t.Val, nil
 }
 
-func (t RONullTime) WillUpdate() bool {
-	return t.Present
+func (t RONullTime) Missing() bool {
+	return !t.Present
 }
 
 type ROTime struct {
@@ -154,6 +154,6 @@ func (t ROTime) Value() (driver.Value, error) {
 	return t.Val, nil
 }
 
-func (t ROTime) WillUpdate() bool {
-	return t.Present
+func (t ROTime) Missing() bool {
+	return !t.Present
 }
