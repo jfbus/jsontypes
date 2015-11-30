@@ -25,8 +25,10 @@ err := json.Unmarshal([]byte(`{"Baz": "baz"}`), foo)
 err := json.Unmarshal([]byte(`{}`), foo)
 ```
 
-TODO :
-* add more types: Int, Float, time.Time (with null output for zero values)
+## Integration with database/sql
+
+jsontypes works with database/sql. Missing JSON values map to NULL DB values.
+
+## TODO :
 * add String(), etc. helpers
-* add sql support (mapping to sql.NullString, etc)
 * add bson support
